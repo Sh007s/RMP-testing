@@ -1,0 +1,49 @@
+#include <Arduino.h>
+#include <esp32-hal-ledc.h>
+
+// ESC 1 
+const int escPin1 = 15;    // The pin the ESC is attached to
+const int ledcChannel1 = 1; // LEDC channel for ESC control
+const int ledcResolution1 = 12; // LEDC resolution (16-bit)
+const int ledcFrequency1 = 50; // LEDC frequency in Hertz (adjust as needed)
+
+//ESC 2
+const int escPin2 = 2;    // The pin the ESC is attached to
+const int ledcChannel2 = 0; // LEDC channel for ESC control
+const int ledcResolution2= 12; // LEDC resolution (16-bit)
+const int ledcFrequency2 = 50; // LEDC frequency in Hertz (adjust as needed)
+
+
+void setup()
+{
+  Serial.begin(9600);
+  delay(2000);
+
+ // ESC 1
+  ledcSetup(ledcChannel1, ledcFrequency1, ledcResolution1);
+  ledcAttachPin(escPin1, ledcChannel1);
+// ESC 2
+  ledcSetup(ledcChannel2, ledcFrequency2, ledcResolution2);
+  ledcAttachPin(escPin2, ledcChannel2);
+
+  Serial.println("Enter PWM value (1000-2000):");
+}
+
+void loop() {
+  if (Serial.available() > 0) 
+  {
+    int pwmValue = Serial.parseInt();  
+    if (pwmValue >= 10 && pwmValue <= 25000) 
+    {
+      ledcWrite(ledcChannel1, pwmValue);
+      ledcWrite(ledcChannel2, pwmValue);
+      Serial.print("Set PWM: ");
+      Serial.println(pwmValue);
+    } 
+    else 
+    {
+      Serial.println("Invalid PWM value. Please enter a value between 1000-2000.");
+    }
+  }
+  delay(100);
+}
